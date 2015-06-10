@@ -1,0 +1,241 @@
+
+<p><a href="#heading1">NAME</a><br/>
+<a href="#heading2">SYNOPSIS</a><br/>
+<a href="#heading3">AVAILABILITY</a><br/>
+<a href="#heading4">DESCRIPTION</a><br/>
+<a href="#heading5">OPTIONS</a><br/>
+<a href="#heading6">EXAMPLES</a><br/>
+<a href="#heading7">BUGS</a><br/>
+<a href="#heading8">SEE ALSO</a><br/>
+<a href="#heading9">AUTHOR</a><br/>
+<a href="#heading10">HISTORY</a><br/>
+
+</p>
+<hr/>
+
+
+<h2 id="heading1">NAME
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><a href="./scripts.php?script=chkftpd">chkftpd</a></b>
+- checks remote ftpd logs for dropped links and refused
+ports, if problems are found the scripts raises alerts and
+starts <b>tcpdump</b> on the remote host.</p>
+
+<h2 id="heading2">SYNOPSIS
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><a href="./scripts.php?script=chkftpd">chkftpd</a></b>
+[<b>-c</b> <i>&lt;client host&gt;</i>] [<b>-d</b>]
+[<b>-e</b> <i>&lt;mail rcpt&gt;</i>] [<b>-l</b>] [<b>-r</b>
+<i>&lt;runtime(secs)</i>] [<b>-t</b>] [<b>-T</b> <i>&lt;sms
+number&gt;</i>] [<b>-v</b>] <i>&lt;hostname&gt;</i> |
+<b>-h</b></p>
+
+<h2 id="heading3">AVAILABILITY
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><a href="./scripts.php?script=chkftpd">chkftpd</a></b>
+is a Bourne shell script which should work equally well on
+all versions of UNIX, Mac OSX and Linux.</p>
+
+<h2 id="heading4">DESCRIPTION
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><a href="./scripts.php?script=chkftpd">chkftpd</a></b>
+checks the ftpd logs on a remote host. If problems are found
+then the systems operators are notified by e-mail and
+optionally by SMS text message. <b>Tcpdump</b> is started on
+the remote host and attempts to record relevant network
+packets for later analysis.</p>
+
+<h2 id="heading5">OPTIONS
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>-c</b>
+<i>&lt;client host&gt;</i></p>
+
+<p style="margin-left:18%;">Use the ftp <i>client
+host</i>name or IP to filter packets collected by <b>tcpdump
+.</b></p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<colgroup><col width="11%"></col>
+<col width="3%"></col>
+<col width="4%" class="center"></col>
+<col width="33%"></col>
+<col width="49%"></col>
+</colgroup>
+<tr valign="top" align="left">
+<td></td>
+<td>
+
+
+<p><b>-d</b></p></td>
+<td></td>
+<td>
+
+
+<p>Switch to debug mode.</p></td>
+<td>
+</td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>-e</b> <i>&lt;e-mail
+address&gt;</i></p>
+
+<p style="margin-left:18%;">Use <i>email address</i> for
+alerts in preference to the default hard coded in the
+script.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<colgroup><col width="11%"></col>
+<col width="6%"></col>
+<col width="1%" class="center"></col>
+<col width="82%"></col>
+</colgroup>
+<tr valign="top" align="left">
+<td></td>
+<td>
+
+
+<p><b>-h</b></p></td>
+<td></td>
+<td>
+
+
+<p>if used on its own the manual page is invoked. Using
+<b>-h</b> in combination with other options is an error. The
+command syntax is printed to <i>standard error</i> and the
+script terminates.</p></td></tr>
+<tr valign="top" align="left">
+<td></td>
+<td>
+
+
+<p><b>-l</b></p></td>
+<td></td>
+<td>
+
+
+<p>Use the system logging facility to log the start of
+<b><a href="./scripts.php?script=chkftpd">chkftpd</a></b> and again to log the identification of a
+problem.</p> </td></tr>
+<tr valign="top" align="left">
+<td></td>
+<td>
+
+
+<p><b>-r #</b></p></td>
+<td></td>
+<td>
+
+
+<p>Set the duration, in seconds for which <b>tcpdump</b>
+will run. The default value is 120 seconds.</p></td></tr>
+<tr valign="top" align="left">
+<td></td>
+<td>
+
+
+<p><b>-t</b></p></td>
+<td></td>
+<td>
+
+
+<p>Put <b><a href="./scripts.php?script=chkftpd">chkftpd</a></b> in test mode. Alerts will be sent
+regardless of whether or not problems are detected.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>-T</b> <i>&lt;phone
+number&gt;</i></p>
+
+<p style="margin-left:18%;">Send SMS text alerts to
+<i>phone number</i></p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<colgroup><col width="11%"></col>
+<col width="3%"></col>
+<col width="4%" class="center"></col>
+<col width="82%"></col>
+</colgroup>
+<tr valign="top" align="left">
+<td></td>
+<td>
+
+
+<p><b>-v</b></p></td>
+<td></td>
+<td>
+
+
+<p>Set verbose mode. Ordinarily <b><a href="./scripts.php?script=chkftpd">chkftpd</a></b> operates
+silently unless problems are detected. In <i>verbose</i>
+mode <b><a href="./scripts.php?script=chkftpd">chkftpd</a></b> reports on every significant action.</p></td></tr>
+</table>
+
+<h2 id="heading6">EXAMPLES
+</h2>
+
+
+<pre style="margin-left:11%; margin-top: 1em"><a href="./scripts.php?script=chkftpd">chkftpd</a> -c 10.0.0.3 -r 300 -T 01159999999 -e user@addr.com</pre>
+
+
+<p style="margin-left:11%; margin-top: 1em">Check the ftpd
+logs on host qsl. If problems are detected notify
+user@addr.com, text 0115 599 9999 and run tcpdump for 5
+minutes filtering for packets to or from 10.0.0.3.</p>
+
+<h2 id="heading7">BUGS
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The script is
+quite crude having been developed to address problems
+experienced by a <a href="http://www.citylinux.com"
+title="Go to the City Linux homepage">
+City Linux
+</a> client running CentOS servers at
+1and1 in Germany. It does depend on very specific file and
+remote access permissions. Particularly it expects that
+where root permission is required <b>sudo</b> will be used.
+With judicious use of the <i>debug</i> and <i>verbose</i>
+modes, permission and configuration problems should be
+relatively easy to resolve.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Currently
+<b><a href="./scripts.php?script=chkftpd">chkftpd</a></b> is looking for dropped links and refused
+PORTS, it also expects to receive the symbolic name or ip of
+the ftp client host involved and passes this to <b>tcpdump
+.</b> If the <b>-c</b> option is not used the Behaviour is
+uncertain.</p>
+
+<h2 id="heading8">SEE ALSO
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><a href="./scripts.php?script=chkdf&amp;man=y">chkdf</a>,
+<a href="./scripts.php?script=chkfw&amp;man=y">chkfw</a>, <a href="./scripts.php?script=clean&amp;man=y">clean</a>, <a href="./scripts.php?script=secscan&amp;man=y">secscan</a>.</p>
+
+<h2 id="heading9">AUTHOR
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Clifford W
+Fulford, <a href="http://www.citylinux.com"
+title="Go to the City Linux homepage">
+City Linux
+</a>. Contact <a href="mailto:fulford@fulford.net" title="Send mail to Clifford W Fulford">fulford@fulford.net</a> or +44
+(0)709 229 5385.</p>
+
+<h2 id="heading10">HISTORY
+</h2>
+<hr/>

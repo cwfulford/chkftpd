@@ -1,0 +1,114 @@
+.TH CHKFTPD 8l "26 September r
+.SH NAME
+.B chkftpd
+- checks remote ftpd logs for dropped links and refused ports, if problems
+are found the scripts raises alerts
+and starts 
+.B tcpdump
+on the remote host.
+.SH SYNOPSIS
+\fBchkftpd\fR [\fB-c\fI <client host>\fR] [\fB-d\fR] [\fB-e\fI <mail rcpt>\fR]
+[\fB-l\fR] [\fB-r \fI<runtime(secs)\fR] [\fB-t\fR] [\fB-T \fI<sms number>\fR]
+[\fB-v\fR] \fI<hostname>\fR | \fB-h\fR
+.b\fRr
+.SH AVAILABILITY
+.B chkftpd
+is a Bourne shell script which should work equally well on all versions of UNIX,
+Mac OSX and Linux.
+.SH DESCRIPTION
+.B chkftpd
+checks the ftpd logs on a remote host. If problems are found then the
+systems operators are notified by e-mail and optionally by SMS text message.
+.B Tcpdump
+is started on the remote host and attempts to record relevant network
+packets for later analysis.
+.SH OPTIONS
+.TP 5
+\fB-c \fI<client host>\fR
+Use the ftp \fIclient host\fRname or IP to filter packets collected by 
+.B tcpdump .
+.TP
+.B -d 
+Switch to debug mode. 
+.TP
+\fB-e \fI<e-mail address>\fR
+Use \fIemail address\fR for alerts in preference to the default
+hard coded in the script.
+.TP
+.B -h
+if used on its own the manual page is invoked. Using 
+.B -h
+in combination with other options is an error. The command syntax is 
+printed to 
+.I standard error
+and the script terminates.
+.TP
+.B -l
+Use the system logging facility to log the start of
+.B chkftpd
+and again to log the identification of a problem.
+.TP
+.B "-r #"
+Set the duration, in seconds for which 
+.B tcpdump
+will run. The default value is 120 seconds.
+.TP
+.B -t 
+Put 
+.B chkftpd
+in test mode. Alerts will be sent regardless of whether or not problems are
+detected.
+.TP
+\fB-T \fI<phone number>\fR
+Send SMS text alerts to \fIphone number\fI
+.TP
+.B -v
+Set verbose mode. Ordinarily 
+.B chkftpd
+operates silently unless problems are detected. In 
+.I verbose
+mode 
+.B chkftpd
+reports on every significant action.
+.SH EXAMPLES
+.nf
+.ft CW
+chkftpd -c 10.0.0.3 -r 300 -T 01159999999 -e user@addr.com
+.ft R
+.fi
+.LP
+Check the ftpd logs on host qsl. If problems are detected notify 
+user@addr.com, text 0115 599 9999 and run tcpdump for 5 
+minutes filtering for packets to or from 10.0.0.3.
+
+.SH BUGS
+The script is quite crude having been developed to address problems experienced
+by a City Linux client running CentOS servers at 1and1 in Germany. It does
+depend on very specific file and remote access permissions. Particularly it
+expects that where root permission is required 
+.B sudo
+will be used. With judicious use of the 
+.I debug
+and
+.I verbose 
+modes, permission and configuration problems should be relatively easy to 
+resolve.
+
+Currently
+.B chkftpd
+is looking for dropped links and refused PORTS, it also expects to receive
+the symbolic name or ip of the ftp client host involved and passes this to
+.B tcpdump .
+If the 
+.B -c
+option is not used the Behaviour is uncertain.
+
+
+.SH SEE ALSO
+.IR chkdf ,
+.IR chkfw ,
+.IR clean ,
+.IR secscan .
+.SH AUTHOR
+Clifford W Fulford, City Linux. Contact fulford@fulford.net or +44 (0)709 229 5385.
+.SH HISTORY

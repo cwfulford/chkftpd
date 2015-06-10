@@ -1,0 +1,114 @@
+#!/bin/bash
+# $Id: chkftpd,v 1.30 2015/02/27 12:26:47 fulford Exp $
+# $Source: /src/merlin/usr/local/etc/RCS/chkftpd,v $
+# $Revision: 1.30 $
+# Author C W Fulford.
+# Copyright 2013 (c) C W Fulford.
+# Licensed for public use under the LGPL.
+# For assistance contact fulford@fulford.net 0709 229 5385
+########################################################################
+cmd=`basename $0`
+syntax="$cmd [-c <client>] [-d] -e <email rcpt> [-l] [-r <run time(secs)>] [-t] [-T <text number> [-v] hostname | -h"
+while [ $# -gt 0 ];do
+	case $1 in
+		-c) client=$2;shift 2;;
+		-d) verbose=0;debug=1;set -x;shift ;;
+		-e) e_rcpt=$2;shift 2;;
+		-h) if [ $# -eq 1  ];then
+			man -8l chkftpd
+			exit 
+		    else
+			echo "syntax: $syntax">&2
+			exit
+		    fi;;
+		-l) log=y;shift ;;
+		-r) runtime=$2;shift 2;;
+		-t) test=1;shift ;;
+		-T) txt=${2}@txtlocal.co.uk;shift 2;;
+		-v) verbose=0;shift ;;
+		-*) echo "syntax: $syntax" >&2; exit 1;;
+		 *) if [ $# -eq 1 ];then
+			host=$1;shift
+		    else
+			echo $syntax >&2
+			exit 1
+		    fi;;
+	esac
+done
+#set variables
+[ -z "$host" ]&& { echo $syntax >&2; exit 1 ;}
+client=${client:-"81.133.202.163"}
+debug=${debug:-0}
+logdir=/var/log/$host
+[ -d $logdir ]||{
+	mkdir -m 775 $logdir ||{
+		echo "$cmd:Cant't open $logdir" >&2
+		exit 1
+	}
+}
+dumplog=$logdir/tcpdump/tcpdump.`date "+%y%m%d"`
+messages=/var/log/messages
+problog=$logdir/${cmd}`date "+%m%d"`
+e_rcpt=${e_rcpt:-fulford@fulford.net}
+rctcpdump="/tmp/rc.tcpdump"
+runtime=${runtime:-120}
+test=${test:-0}
+today=`date "+%b %d"`;[ $debug -gt 0 ]&& echo $today >&2
+tmp=/tmp/`basename $cmd`$$
+
+_alert (){
+	[ $verbose ] && echo "$cmd: ALERT - $msg"
+	[ -n "$log" ] && logger -t $cmd "$msg"
+	[ -n "$txt" ] && cc="-c $txt"
+	echo "see $problog"|
+       		mailx -s "URGENT $msg" \
+		$cc \
+		$e_rcpt 
+}
+
+_mkscript(){
+	cat >${rctcpdump} <<- EOF
+		/usr/sbin/tcpdump host $client -w $dumplog >/dev/null 2>&1 &
+		echo \$!
+	EOF
+}
+
+_problem (){
+	if [ -n "$client" ];then
+		escclient=`echo $client|sed -e 's/\./\\\./g'`
+	fi
+	[ -f $problog ] || touch $problog
+	ssh $host "sudo grep -E \"^$today.*proftpd.*$escclient\" $messages"|
+	grep -e Link -e Refused >$problog
+	rval=$?
+	if [ $test -eq 1 ];then 
+		return 0
+	else
+		return $rval
+	fi
+}
+[ -n "$log" ] && logger -t $cmd "target $host started"
+# Has tcpdump been run today 
+if [ -f $problog -a `cat $problog 2>/dev/null|wc -l` -gt 0 ] ;then
+	[ $verbose ] &&{
+       		echo "$cmd: problem already logged" >&2
+	}
+	exit 1
+fi
+if _problem ;then
+	msg="ftpd reporting problems on $host"
+	_alert
+	_mkscript
+	ssh $host "[ -f $rctcpdump ]&& rm $rctcpdump"
+	[ $verbose ] && echo "$cmd: transfering $rctcpdump to $host"
+	scp -q $rctcpdump $host:$rctcpdump 
+	ssh $host "chmod 555 $rctcpdump"
+	[ $verbose ] && echo "$cmd: starting sniffer on $host"
+	tcppid=`ssh $host "sudo $rctcpdump"`
+	sleep $runtime
+	[ $verbose ] && echo "$cmd: stopping sniffer on $host"
+	ssh $host "sudo kill $tcppid"
+else
+	[ $verbose ] && echo "$cmd: no problems found on qsl"
+fi
+
